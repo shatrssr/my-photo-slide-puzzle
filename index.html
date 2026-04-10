@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -7,28 +8,31 @@
     <!-- Google fonts - 絵本風のフォント読み込み-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700;800&family=M+PLUS+Rounded+1c:wght@400;700;900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700;800&family=M+PLUS+Rounded+1c:wght@400;700;900&display=swap"
+        rel="stylesheet">
 
     <!-- 外部CSSの読み込み -->
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div class="container">
         <!--  タイトル  -->
         <h1>フォトスライドパズル</h1>
 
         <!-- 難易度選択 -->
-         <div id="difficultySection" class="card difficulty-section">
+        <div id="difficultySection" class="card difficulty-section">
             <div class="difficulty-title">パズルの難易度を選んでね</div>
             <div class="difficulty-buttons">
                 <button class="btn-difficulty easy" data-size="3">かんたん<br><small>9マス</small></button>
                 <button class="btn-difficulty medium" data-size="4">ふつう<br><small>16マス</small></button>
                 <button class="btn-difficulty hard" data-size="5">むずかしい<br><small>25マス</small></button>
             </div>
-         </div>
+        </div>
 
-         <!-- 画像アップロード -->
-          <div id="uploadSection" class="card hidden">
+        <!-- 画像アップロード -->
+        <div id="uploadSection" class="card hidden">
             <label for="imageInput" class="upload-label">
                 写真をアップロード<br>
                 <small style="opacity: 0.7;">タップして画像を選択してね</small>
@@ -39,7 +43,7 @@
                 <img id="preview" src="" alt="Preview">
                 <button id="shuffleBtn" class="btn-shuffle">シャッフルして開始！</button>
             </div>
-          </div>
+        </div>
 
         <!-- ゲームセクション -->
         <div id="gameSection" class="hidden">
@@ -68,7 +72,7 @@
                     <div class="reference-card">
                         <div class="reference-title">完成見本</div>
                         <img id="referenceImage" src="" alt="完成見本">
-                     </div>
+                    </div>
 
                     <!-- 降参ボタン -->
                     <button id="giveUpBtn" class="btn-give-up">降参する</button>
@@ -85,8 +89,23 @@
             <button id="replayBtn" class="btn-replay">もう一度遊ぶ</button>
         </div>
     </div>
+    <!-- 降参確認オーバーレイ -->
+    <div id="confirmOverlay" class="confirm-overlay">
+        <div class="confirm-content">
+            <div class="confirm-title">降参しますか？</div>
+            <p style="color: var(--text-light); font-weight: 700; margin-bottom: 2rem;">完成系が表示されます。</p>
+            <div class="confirm-buttons">
+                <button id="confirmYesBtn" class="btn-confirm-yes">はい（降参する）</button>
+                <button id="confirmNoBtn" class="btn-confirm-no">いいえ</button>
+            </div>
+        </div>
+    </div>
+
+
+
 
     <!-- 外部JavaScriptファイルの読み込み -->
-     <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
+
 </html>
