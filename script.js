@@ -3,7 +3,7 @@
 
 // パズルの状態を保持する配列
 // ex: 3*3の場合[0,1,2,3,4,5,6,7,8]が完成形.8が空白タイルを表す
-let board =[];
+let board = [];
 
 // プレイヤーが移動した回数
 let moves = 0;
@@ -44,6 +44,9 @@ const giveUpBtn = document.getElementById('giveUpBtn');
 const successOverlay = document.getElementById('successOverlay');
 const successStats = document.getElementById('successStats');
 const replayBtn = document.getElementById('replayBtn');
+const confirmOverlay = document.getElementById('confirmOverlay');
+const confirmYesBtn = document.getElementById('confirmYesBtn');
+const confirmNoBtn = document.getElementById('confirmNoBtn');
 
 ///
 // イベントリスナーの登録
@@ -70,7 +73,26 @@ giveUpBtn.addEventListener('click', giveUp);
 //もう一度遊ぶ
 replayBtn.addEventListener('click', resetGame);
 
-/// 難易度選択処理
+/// はい・いいえボタンのクリックイベント
+//
+
+// はい（降参する）が押されたときの処理
+confirmYesBtn.addEventListener('click', () => {
+    //まず確認オーバーレイを非表示にする
+    confirmOverlay.classList.remove('show');
+
+    // 降参処理を実行
+    executeGiveUP();
+});
+
+// いいえが押されたときの処理
+confirmNoBtn.addEventListener('click', () => {
+    // 確認オーバーレイを非表示にするだけ（何もしないでゲーム続行）
+    confirmOverlay.classList.remove('show');
+});
+
+/// 
+// 難易度選択処理
 
 /** 難易度選択
  * @param {HTMLElement} selectedBtn - クリックされたボタン要素
@@ -92,24 +114,24 @@ function selectDifficulty(selectedBtn) {
     uploadSection.classList.remove('hidden');
 }
 
-/// 画像アップロード処理
-//
+///
+// 画像アップロード処理
 
 /**
  * ユーザーが選択した画像を読み込む
  * @param {Event} e - change イベント
- */ 
+ */
 function handleImageUpload(e) {
     const file = e.target.files[0];
     if (file) {
         // FileReaderを使ってファイルを読み込む
         const reader = new FileReader();
 
-        reader.onload = function(event) {
+        reader.onload = function (event) {
             // 新しいImageオブジェクトを作成
             originalImage = new Image();
 
-            originalImage.onload = function() {
+            originalImage.onload = function () {
                 // プレビュー画像を表示
                 preview.src = event.target.result;
                 previewContainer.classList.remove('hidden');
@@ -127,8 +149,9 @@ function handleImageUpload(e) {
     }
 }
 
-/// 画像を指定されたグリッドサイズで分割
-//
+///
+// 画像を指定されたグリッドサイズで分割
+
 
 // アップロードされた画像をグリッドサイズに応じて分割
 // 各ピースをData URL形式でtiles配列に保存
@@ -179,8 +202,8 @@ function splitImage() {
     }
 }
 
-/// ゲーム開始処理
-//
+///
+// ゲーム開始処理
 
 // パズルをシャッフルしてゲームを開始
 function startGame() {
@@ -189,7 +212,7 @@ function startGame() {
 
     // ボードを初期化（0から始まる連番の配列）
     // [0, 1, 2, 3, 4, 5, 6, 7, 8] のような配列
-    board = Array.from({length: totalTiles}, (_, i) => i);
+    board = Array.from({ length: totalTiles }, (_, i) => i);
 
     // 解けパズルになるまでシャッフルを繰り返す
     // isSolved(): すでに完成していないか
@@ -224,13 +247,13 @@ function startGame() {
     startTimer();
 }
 
-/// 配列をシャッフル（Fisher-Yatesアルゴリズム）
-//
+///
+// 配列をシャッフル（Fisher-Yatesアルゴリズム）
 
 /** 配列をランダムにシャッフル
  * Fisher-Yates（フィッシャー–イェーツ）アルゴリズムを使用
  * @param {Array} array - シャッフルする配列
- */ 
+ */
 function shuffleArray(array) {
     // 配列の末尾から順に処理
     for (let i = array.length - 1; i > 0; i--) {
@@ -242,14 +265,14 @@ function shuffleArray(array) {
     }
 }
 
-/// パズルが解けるかどうかを判定
-//
+///
+// パズルが解けるかどうかを判定
 
 /**
  * パズルが数学的に解けるかどうかを判定
  * 転倒数を使った判定方法
  * @returns {boolean} 解ける場合はtrue
- */ 
+ */
 function isSolvable() {
     const totalTiles = gridSize * gridSize;
     const emptyTile = totalTiles - 1; // 最後のタイルが空白
@@ -263,8 +286,8 @@ function isSolvable() {
             if (board[i] !== emptyTile &&
                 board[j] !== emptyTile &&
                 board[i] > board[j]) {
-                    inversions++;
-                }
+                inversions++;
+            }
         }
     }
     // グリッドサイズが奇数の場合
@@ -275,12 +298,12 @@ function isSolvable() {
         // グリッドサイズが偶数の場合
         // 空白の位置も考慮する必要がある
         const emptyRow = Math.floor(board.indexOf(emptyTile) / gridSize);
-        return (inversions + emptyRow) % 2 ===1;
+        return (inversions + emptyRow) % 2 === 1;
     }
 }
 
-/// パズルボードを描画
-//
+///
+// パズルボードを描画
 
 // 現在のboard配列の状態に基づいてパズルを描画
 function renderBoard() {
@@ -343,11 +366,12 @@ function canMove(position) {
     // 縦方向：行が1つ違い、列が同じ
     // 横方向：列が1つ違い、行が同じ
     return (Math.abs(row - emptyRow) === 1 && col === emptyCol) ||
-            (Math.abs(col - emptyCol) === 1 && row === emptyRow);
+        (Math.abs(col - emptyCol) === 1 && row === emptyRow);
 }
 
-/// タイルを移動
-//
+///
+// タイルを移動
+
 /**
  * 指定位置のタイルを空白と入れ替える
  * @param {number} position - 移動するタイルの位置
@@ -377,7 +401,7 @@ function moveTile(position) {
     }
 }
 
-// /
+///
 // パズルが完成しているかチェック
 /**
  * @retuens {boolean} 完成していればtrue
@@ -388,8 +412,9 @@ function isSolved() {
     return board.every((val, idx) => val === idx);
 }
 
-// /
+///
 // 経過時間を表示するタイマーを開始
+
 function startTimer() {
     // 既存のタイマーがあればクリア
     if (timerInterval) clearInterval(timerInterval);
@@ -402,31 +427,25 @@ function startTimer() {
     }, 1000);
 }
 
-// /
+///
 // 降参処理
+
 // パズルを自動的に完成形にする
 function giveUp() {
-    // 確認ダイアログを表示
-    if (confirm('降参しますか？\n完成形が表示されます。')) {
-        // タイマーを停止
-        clearInterval(timerInterval);
-
-        // ボードを完成形にする
-        const totalTiles = gridSize * gridSize;
-        board = Array.from({length: totalTiles}, (_, i) => i);
-
-        // ボードを再描画
-        renderBoard();
-
-        // 少し遅延してから成功画面を表示
-        setTimeout(() => {
-            showSuccess(true); //　降参フラグを渡す
-        }, 500);
+    if (isInAppBrowser()) {
+        // xなどのアプリ内のブラウザなら、オリジナルのオーバーレイを表示
+        confirmOverlay.classList.add('show');
+    } else {
+        // 通常のブラウザなら、標準のconfirmダイアログを使用
+        if (confirm('降参しますか？\n完成系が表示されます。')) {
+            executeGiveUP(); //降参処理を実行
+        }
     }
 }
 
-// /
+///
 // 成功画面表示
+
 /**
  * クリア画面を表示
  * @param {boolean} isGiveUp - 降参による完成かどうか
@@ -451,8 +470,9 @@ function showSuccess(isGiveUp = false) {
     successOverlay.classList.add('show');
 }
 
-// /
+///
 // ゲームをリセット
+
 function resetGame() {
     // オーバーレイを非表示
     successOverlay.classList.remove('show');
@@ -476,4 +496,33 @@ function resetGame() {
     previewContainer.classList.add('hidden');
 }
 
+///
+// アプリ内ブラウザの判定
+
+function isInAppBrowser() {
+    const ua = navigator.userAgent.toLowerCase();
+    // x, line,instagram, facebookなどの判定
+    return ua.includes('twitter') || ua.includes('line') || ua.includes('instagram') || ua.includes('fbav');
+    // trueならアプリ内ブラウザ、falseなら通常のブラウザ
+}
+
+///
+// 共通の降参実行処理
+
+function executeGiveUP() {
+    // タイマーを停止
+    clearInterval(timerInterval);
+
+    // ボードを完成系にする
+    const totalTiles = gridSize * gridSize;
+    board = Array.from({ length: totalTiles }, (_, i) => i);
+
+    // ボードを再描画
+    renderBoard();
+
+    // 少し遅延してから成功画面を表示
+    setTimeout(() => {
+        showSuccess(true); // 降参フラグを渡す
+    }, 500);
+}
 
