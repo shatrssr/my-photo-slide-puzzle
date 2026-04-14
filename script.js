@@ -73,7 +73,23 @@ giveUpBtn.addEventListener('click', giveUp);
 //もう一度遊ぶ
 replayBtn.addEventListener('click', resetGame);
 
-//はい・いいえボタンのクリックイベント
+/// はい・いいえボタンのクリックイベント
+//
+
+// はい（降参する）が押されたときの処理
+confirmYesBtn.addEventListener('click', () => {
+    //まず確認オーバーレイを非表示にする
+    confirmOverlay.classList.remove('show');
+
+    // 降参処理を実行
+    executeGiveUP();
+});
+
+// いいえが押されたときの処理
+confirmNoBtn.addEventListener('click', () => {
+    // 確認オーバーレイを非表示にするだけ（何もしないでゲーム続行）
+    confirmOverlay.classList.remove('show');
+});
 
 /// 
 // 難易度選択処理
@@ -416,22 +432,14 @@ function startTimer() {
 
 // パズルを自動的に完成形にする
 function giveUp() {
-    // 確認ダイアログを表示
-    if (confirm('降参しますか？\n完成形が表示されます。')) {
-        // タイマーを停止
-        clearInterval(timerInterval);
-
-        // ボードを完成形にする
-        const totalTiles = gridSize * gridSize;
-        board = Array.from({ length: totalTiles }, (_, i) => i);
-
-        // ボードを再描画
-        renderBoard();
-
-        // 少し遅延してから成功画面を表示
-        setTimeout(() => {
-            showSuccess(true); //　降参フラグを渡す
-        }, 500);
+    if (isInAppBrowser()) {
+        // xなどのアプリ内のブラウザなら、オリジナルのオーバーレイを表示
+        confirmOverlay.classList.add('show');
+    } else {
+        // 通常のブラウザなら、標準のconfirmダイアログを使用
+        if (confirm('降参しますか？\n完成系が表示されます。')) {
+            executeGiveUP(); //降参処理を実行
+        }
     }
 }
 
@@ -488,4 +496,33 @@ function resetGame() {
     previewContainer.classList.add('hidden');
 }
 
+///
+// アプリ内ブラウザの判定
+
+function isInAppBrowser() {
+    const ua = navigator.userAgent.toLowerCase();
+    // x, line,instagram, facebookなどの判定
+    return ua.includes('twitter') || ua.includes('line') || ua.includes('instagram') || ua.includes('fbav');
+    // trueならアプリ内ブラウザ、falseなら通常のブラウザ
+}
+
+///
+// 共通の降参実行処理
+
+function executeGiveUP() {
+    // タイマーを停止
+    clearInterval(timerInterval);
+
+    // ボードを完成系にする
+    const totalTiles = gridSize * gridSize;
+    board = Array.from({ length: totalTiles }, (_, i) => i);
+
+    // ボードを再描画
+    renderBoard();
+
+    // 少し遅延してから成功画面を表示
+    setTimeout(() => {
+        showSuccess(true); // 降参フラグを渡す
+    }, 500);
+}
 
